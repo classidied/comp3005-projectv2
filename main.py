@@ -11,6 +11,9 @@ connection = psycopg2.connect(
 
 cursor = connection.cursor()
 
+# greet user + ask them to enter which type of user they are for login
+
+
 # greet user + show commands they can use
 print("Welcome to another generic PostgresSQL database requester(?)!\n The application functions are as follows: \n")
 print("-> getAllStudents()")

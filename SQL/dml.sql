@@ -58,6 +58,29 @@ VALUES
 ('angele@email.com', 'sempre')
 ;
 
+-- populate bill table
+INSERT INTO bill (member_id, amount)
+VALUES
+(1, 20),
+(2, 15),
+(3, 20),
+(4, 20),
+(5, 15),
+(6, 20),
+(7, 30),
+(8, 20)
+;
+-- populate transaction table
+INSERT INTO transaction (member_id, payment_method, date_processed, amount)
+VALUES
+(1, 'visa', '2024-04-05', 20),
+(2, 'mastercard', '2024-04-01', 20),
+(4, 'visa', '2024-04-02', 20),
+(6, 'amex', '2024-04-03', 20),
+(7, 'mastercard', '2024-04-05', 20),
+(8, 'visa', '2024-04-07', 20)
+;
+
 -- populate memberProfile table
 INSERT INTO memberProfile (first_name, last_name, member_id, email, date_joined)
 VALUES

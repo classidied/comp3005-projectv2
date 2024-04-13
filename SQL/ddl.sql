@@ -43,6 +43,24 @@ create table member (
 	passwd varchar(255) not null
 );
 
+create table bill (
+	bill_id serial primary key,
+	member_id int not null,
+	amount int not null,
+	foreign key (member_id) references member	
+		on delete cascade
+);
+
+create table transaction (
+	transaction_id serial primary key,
+	member_id int not null,
+	payment_method varchar(255) not null,
+	date_processed date not null,
+	amount int not null,
+	foreign key (member_id) references member
+		on delete cascade
+);
+
 create table memberProfile (
 	profile_id serial primary key,
 	member_id int not null unique,
