@@ -31,8 +31,8 @@ create table trainer (
 create table availability (
 	availability_id serial primary key,
 	trainer_id int not null,
-	start_time timestamp not null,
-	end_time timestamp not null,
+	start_time varchar(255) not null,
+	end_time varchar(255) not null,
 	foreign key (trainer_id) references trainer
 		on delete cascade
 );
@@ -106,8 +106,8 @@ create table session (
 	trainer_id int not null,
 	room_id int not null,
 	session_name varchar(255) not null,
-	start_time timestamp not null,
-	end_time timestamp not null,
+	start_time varchar(255) not null,
+	end_time varchar(255) not null,
 	foreign key (schedule_id) references schedule
 		on delete cascade,
 	foreign key (trainer_id) references trainer
@@ -121,8 +121,8 @@ create table class (
 	schedule_id int not null,
 	room_id int not null,
 	class_name varchar(255) not null,
-	start_time timestamp not null,
-	end_time timestamp not null,
+	start_time varchar(255) not null,
+	end_time varchar(255) not null,
 	foreign key (schedule_id) references schedule
 		on delete cascade,
 	foreign key (room_id) references room

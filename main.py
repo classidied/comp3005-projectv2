@@ -300,13 +300,13 @@ while (1):
             req = input(">> ").strip()
 
             if (req == "1"):
-                member_manage_profile()
+                admin_manage_room_bookings()
             elif (req == "2"):
-                member_view_dashboard()
+                admin_manage_equipment()
             elif (req == "3"):
-                member_manage_schedule()
+                admin_update_classes()
             elif (req == "4"):
-                member_manage_schedule()
+                admin_manage_bills()
             else:
                 break
     else:
