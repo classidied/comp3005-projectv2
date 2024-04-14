@@ -2,7 +2,7 @@ create table equipment (
 	equipment_id serial primary key,
 	equipment_name text not null,
 	maintenance_period int not null,
-	last_maintained_date date not null,
+	last_maintained_date varchar(255) not null,
 	maintenance_overdue boolean not null
 );
 
@@ -67,7 +67,7 @@ create table memberProfile (
 	first_name varchar(255) not null,
 	last_name varchar(255) not null,
 	email varchar(255) unique not null,
-	date_joined date default CURRENT_DATE,
+	date_joined varchar(255),
 	foreign key (member_id) references member
 		on delete cascade
 );

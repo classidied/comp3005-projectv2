@@ -2,7 +2,7 @@ import psycopg2
 
 # set up the connection to the database
 connection = psycopg2.connect(
-    dbname="projectv2",
+    dbname="fitnessClub",
     user="postgres",
     password="postgres",
     host="localhost",
@@ -51,7 +51,7 @@ def member_manage_profile(member_id, profile_info):
     print("Please choose an option to proceed: \n")
     print("1. Update profile\n")
     print("2. Update fitness goals\n")
-    print("3. Update health metrics")
+    print("3. Update health metrics\n")
     print("4. Go back\n")
     update_choice = input(">> ").strip()
     if (update_choice == "1"):
@@ -59,7 +59,7 @@ def member_manage_profile(member_id, profile_info):
     elif (update_choice == "2"):
         member_update_goals(profile_info[0])
     elif (update_choice == "3"):
-        member_update_metrics(member_id)
+        member_update_metrics(profile_info[0])
     else:
         return
 
@@ -84,16 +84,50 @@ def member_update_profile(member_id):
     print("Successfully updated!")
 
 def member_update_goals(profile_id):
-    goals = cursor.execute("select * from goal where profile_id={};".format(profile_id))
-    print("Successfully updated goals!")
+    cursor.execute("select * from goal where profile_id={};".format(profile_id))
+    goals = parse_info(cursor.fetchall())
+    print("Current goals:\n")
+    print(goals[2] + ": " + str(goals[3]) + "\n")
+    goal_id = goals[1]
 
-def member_update_metrics(member_id):
-    print("Successfully updated metrics!")
+    print("Please choose an option to proceed: \n")
+    print("1. Update goals\n")
+    print("2. Go back\n")
+
+    update_choice = input(">> ").strip()
+    if (update_choice == "1"):
+        name = input("Enter the new name for your goal: \n>> ").strip()
+        val = input("Enter the new value for your goal: \n>> ").strip()
+        cursor.execute("update goal set target_value={} where goal_id={};".format(val, goal_id))
+        cursor.execute("update goal set goal_name='{}' where goal_id={};".format(name, goal_id))
+        print("Successfully updated goals!")
+    return
+
+def member_update_metrics(profile_id):
+    cursor.execute("select * from healthMetric where profile_id={};".format(profile_id))
+    metrics = cursor.fetchall()
+    metrics_arr = []
+    for i in range(0, len(metrics)):
+        metrics_arr.append(parse_info(metrics[i]))
+    for m in metrics_arr:
+        print(m[2] + ": " + m[3] + "\n")
+    
+    print("Please choose an option to proceed: \n")
+    print("1. Update metrics\n")
+    print("2. Go back\n")
+
+    update_choice = input(">> ").strip()
+    if (update_choice == "1"):
+        metric_id = input("Enter the number of the metric you want to update: \n>> ")
+        val = input("Enter the new value for your metric: \n>> ").strip()
+        cursor.execute("update healthMetric set metric_value={} where metric_id={};".format(val, metric_id))
+        print("Successfully updated metrics!")
+    return
 
 def member_view_dashboard(member_id, profile_id):
     dashboard_info = ""
     cursor.execute("select dashboard_id from dashboard where member_id={};".format(member_id))
-    dashboard_info = parse_info(cursor.fetchall())
+    dashboard_info = parse_info(cursor.fetchall()[0])
     dashboard_id = dashboard_info[0]
 
     # get info from routines
@@ -134,7 +168,7 @@ def member_view_dashboard(member_id, profile_id):
 def member_manage_schedule(member_id):
     schedule_info = ""
     cursor.execute("select schedule_id from schedule where member_id={};".format(member_id))
-    schedule_info = parse_info(cursor.fetchall())
+    schedule_info = parse_info(cursor.fetchall()[0])
     schedule_id = schedule_info[0]
 
     # get info from sessions
@@ -166,13 +200,12 @@ def get_trainer_name(trainer_id):
     trainer_info = parse_info(cursor.fetchall())
     return trainer_info[0] + trainer_info[1]
 
-def parse_info(info_array):
-    # convert info to string
-    str_info = ''.join(str(x) for x in info_array)
+def parse_info(tuple):
+    # converts tuple
+    str_info = str(tuple)
     # remove brackets and whitespace
     str_info = str_info.replace('(', '')
     str_info = str_info.replace(')', '')
-    str_info = str_info.replace(' ', '')
     # strip whitespace
     str_info = str_info.strip()
     # split string to get array
@@ -181,7 +214,7 @@ def parse_info(info_array):
 def trainer_view_schedule(trainer_id):
     schedule_info = ""
     cursor.execute("select schedule_id from schedule where trainer_id={};".format(trainer_id))
-    schedule_info = parse_info(cursor.fetchall())
+    schedule_info = parse_info(cursor.fetchall()[0])
     schedule_id = schedule_info[0]
 
     # get info from sessions
@@ -202,14 +235,27 @@ def trainer_add_availability(trainer_id):
     cursor.execute("select start_time, end_time from session where trainer_id={};".format(trainer_id))
     availability_info = parse_info(cursor.fetchall())
 
-    for a in availability_info:
-        print(str(a) + "\n")
+    for i in range(0, len(availability_info), 2):
+        print("Available from " + availability_info[i] + " until " + availability_info[i+1] + "\n")
+
+    print("Please choose an option to proceed: \n")
+    print("1. Add availability\n")
+    print("2. Go back\n")
+
+    add_choice = input(">> ").strip()
+    if (add_choice == "1"):
+        start_time = input("Enter the start time for your new availability: \n>> ").strip()
+        end_time = input("Enter the end time for your new availability: \n>> ").strip()
+        cursor.execute("INSERT INTO availability (trainer_id, start_time, end_time) VALUES ({}, '{}', '{}');".format(trainer_id, start_time, end_time))
+
+        print("Successfully added availability!")
+    return
 
 def trainer_view_user_profiles():
     search_name = input("Enter a name: \n>> ").strip()
     cursor.execute("select * from memberProfile where first_name='{}';".format(search_name))
-    results = parse_info(cursor.fetchall())
-    print(str(results))
+    results = parse_info(cursor.fetchall()[0])
+    print("PROFILE: \nFirst Name: {}\nLast Name: {}\nEmail: {}\nDate Joined: {}\n".format(results[2], results[3], results[4], results[5]))
 
 def admin_manage_room_bookings():
     print()
@@ -242,12 +288,12 @@ while (1):
         continue
     elif (login_req == "2"):
         member_info = login('member')
-        member_arr = parse_info(str(member_info))
+        member_arr = parse_info(member_info)
         member_id = int(member_arr[0])
         result = ""
         cursor.execute("select * from memberProfile where member_id={};".format(member_id))
         result = cursor.fetchall()
-        profile_info = parse_info(result)
+        profile_info = parse_info(result[0])
         profile_id = profile_info[0]
         while (1):
             print("Please choose from the following options (1, 2, 3, 4): \n")
@@ -268,7 +314,9 @@ while (1):
                 break
     elif (login_req == "3"):
         trainer_info = login('trainer')
-        trainer_arr = parse_info(str(trainer_info))
+        print("trainer_info " + str(trainer_info))
+        trainer_arr = parse_info(trainer_info)
+        print("trainer_arr: " + str(trainer_arr))
         trainer_id = int(trainer_arr[0])
         while (1):
             print("Please choose from the following options (1, 2, 3, 4): \n")
@@ -288,7 +336,8 @@ while (1):
             else:
                 break
     elif (login_req == "4"):
-        admin_id = login('adminStaff')
+        admin_info = login('adminStaff')
+        admin_arr = parse_info(str(admin_info))
         while (1):
             print("Please choose from the following options (1, 2, 3, 4, 5): \n")
             print("1. Manage Room Booking")

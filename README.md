@@ -6,24 +6,8 @@ An application in python to operate a fitness club model
 - [Relational Schema](https://github.com/classidied/comp3005-projectv2/blob/main/Diagrams/Relational%20Schema.svg)  
 
 ## Setting up the database
-Table creation on database:  
-```sql
-create table students (
-	student_id serial primary key,
-	first_name text not null,
-	last_name text not null,
-	email text unique not null,
-	enrollment_date date
-)
-```  
-
-Inserting data into the database:  
-```sql
-INSERT INTO students (first_name, last_name, email, enrollment_date) VALUES
-('John', 'Doe', 'john.doe@example.com', '2023-09-01'),
-('Jane', 'Smith', 'jane.smith@example.com', '2023-09-01'),
-('Jim', 'Beam', 'jim.beam@example.com', '2023-09-02');
-```
+- Execute the `ddl.sql` file in the SQL folder to create the database
+- Execute the `dml.sql` file in the SQL folder to populate the database
 
 ## Steps to compile and run the application: 
 
@@ -33,7 +17,7 @@ INSERT INTO students (first_name, last_name, email, enrollment_date) VALUES
 2. `source ~/.environments/test/bin/activate`  
 then install `psycopg2` so we can connect to the library  
 3. `pip3 install psycopg2`  
-- edit `script.py` to include the correct parameters according to your database (database name, host, user, port)
+- edit `main.py` to include the correct parameters according to your database (database name, host, user, port)
 - to find this info, run `\conninfo` on the psql tool on pgAdmin in your database
 - in the virtual environment created through the first two commands, run `python3 script.py` and run any commands you'd like  
 
