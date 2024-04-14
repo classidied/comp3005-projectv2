@@ -258,10 +258,29 @@ def trainer_view_user_profiles():
     print("PROFILE: \nFirst Name: {}\nLast Name: {}\nEmail: {}\nDate Joined: {}\n".format(results[2], results[3], results[4], results[5]))
 
 def admin_manage_room_bookings():
-    print()
+    print("Current rooms booked: \n")
+    cursor.execute("select room_id from session;")
+    room_ids = cursor.fetchall()
+
+    for id in room_ids:
+        room_arr = parse_info(id)
+        cursor.execute("select room_num from room where room_id={};".format(room_arr[0]))
+        room_num = parse_info(cursor.fetchall()[0])
+        print(str(room_num) + "-- booked\n")
 
 def admin_manage_equipment():
-    print()
+    print("View Equipment: \n")
+    cursor.execute("select * from equipment")
+    equip_info = cursor.fetchall()
+
+    for e in equip_info:
+        e_arr = parse_info(e)
+        
+        print(e_arr[1] + " | last maintained on: " + e_arr[3] + "\n")
+    equip_overdue = ""
+    cursor.execute("select * from equipment where maintenance_overdue=true;")
+    equip_overdue = cursor.fetchall()[0]
+    print("Equipment in need of maintenance: " + equip_overdue[1] + "\n")
 
 def admin_update_classes():
     print()
@@ -314,9 +333,7 @@ while (1):
                 break
     elif (login_req == "3"):
         trainer_info = login('trainer')
-        print("trainer_info " + str(trainer_info))
         trainer_arr = parse_info(trainer_info)
-        print("trainer_arr: " + str(trainer_arr))
         trainer_id = int(trainer_arr[0])
         while (1):
             print("Please choose from the following options (1, 2, 3, 4): \n")
@@ -337,7 +354,8 @@ while (1):
                 break
     elif (login_req == "4"):
         admin_info = login('adminStaff')
-        admin_arr = parse_info(str(admin_info))
+        admin_arr = parse_info(admin_info)
+        admin_id = admin_arr[0]
         while (1):
             print("Please choose from the following options (1, 2, 3, 4, 5): \n")
             print("1. Manage Room Booking")
